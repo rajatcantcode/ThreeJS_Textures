@@ -73,6 +73,8 @@ const ambientOcclusionTexture = textureLoader.load(
 const metalnessTexture = textureLoader.load("/textures/door/metalness.jpg");
 const roughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
 const colorTexture = textureLoader.load("/textures/door/color.jpg");
+const checkboard = textureLoader.load("/textures/checkerboard-1024x1024.png");
+const checkboard2 = textureLoader.load("/textures/door/checkerboard-8x8.png");
 
 colorTexture.colorSpace = THREE.SRGBColorSpace; //This is used to fix the color
 //We can repeat the texture by using the repeat property
@@ -98,6 +100,36 @@ colorTexture.rotation = Math.PI * 0.25;
 colorTexture.center.x = 0.5;
 colorTexture.center.y = 0.5;
 
+//If we notice at the top of cube we can notice the texture is blurry
+//This is due to filtering and mipmapping
+//Two types of algo used to use mipmapping
+// https://medium.com/@rgbguy/mipmaps-and-why-they-are-useful-6d3e33c68b16
+// Minification Filter : Pixels of textures smaller then the pixels of render
+// In short , texture is too big to cover the surface of the gemoetry
+//Try it with checkboard for better results
+//We can even deactive the mipmapping
+checkboard.generateMipmaps = false;
+// checkboard.minFilter = THREE.NearestFilter;
+checkboard.maxFilter = THREE.NearestFilter;
+
+//When Preparing our textures 3 things to keep in mind
+// 1. The Weight
+// jpg loosely compression but usually lighter
+// png lossless compression but usually heavier
+// Website - https://tinypng.com/
+// 2. The Size(Resolution)
+// Each pixel of the image has to be stored on the GPU regardless of the image's weight
+// GPU has storage limitations
+// It's even more as because mipmapping increases the number of pixels to store
+// Try to reduce the sizes of your images as much as possible
+//Make sure the image height and width is powerd by 2 that is 512 * 512 , 1024 * 1024 , 512 * 2048
+// 3. The data
+//Texture supports transparency but we cant have transparency in JPG so only PNG file :)
+// Good websites for textures
+//https://www.arroway-textures.ch/
+//https://3dtextures.me/
+//https://www.poliigon.com/
+
 /**
  * Base
  */
@@ -112,13 +144,13 @@ const scene = new THREE.Scene();
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({
-  map: colorTexture,
+  map: checkboard,
 });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 //We can see the UV Coordinates
-console.log(geometry.attributes.uv);
+// console.log(geometry.attributes.uv);
 //If we create our own geometry we need to specify the UV coordinates
 //Even if we are using 3D sofware we need to specify the UV coordinates
 
